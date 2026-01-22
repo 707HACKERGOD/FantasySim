@@ -149,12 +149,28 @@ class Game:
     def handle_player_movement(self, keys):
         if not self.world.player_char: return
         player = self.world.player_char
+        
+        # Determine base speed
         spd = player.speed * 2 if keys[pygame.K_LSHIFT] else player.speed
-        if keys[pygame.K_w] or keys[pygame.K_UP]: player.y -= spd
-        if keys[pygame.K_s] or keys[pygame.K_DOWN]: player.y += spd
-        if keys[pygame.K_a] or keys[pygame.K_LEFT]: player.x -= spd
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT]: player.x += spd
-        player.target_x, player.target_y = player.x, player.y
+        
+        # Calculate direction (dx, dy)
+        dx, dy = 0, 0
+        if keys[pygame.K_w] or keys[pygame.K_UP]:    dy -= 1
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:  dy += 1
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:  dx -= 1
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]: dx += 1
+        
+        # Normalize diagonal speed
+        # If moving in both X and Y directions, scale speed down
+        if dx != 0 and dy != 0:
+            spd *= 0.7071  # Multiplies by ~1/sqrt(2)
+            
+        # Apply movement
+        player.x += dx * spd
+        player.y += dy * spd
+        
+        # Update target coordinates so the AI/Movement logic doesn't override it
+        player.target_x, player.target_y = player.x, player.y    
     
     def handle_camera_movement(self, keys):
         cam_speed = 20 / self.state.zoom

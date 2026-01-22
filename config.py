@@ -7,7 +7,7 @@ TILE_SIZE = 64
 
 # --- WORLD ---
 MAP_W, MAP_H = 2400, 1800
-TIME_SPEED = 0.2
+TIME_SPEED = 0.017
 
 # --- COLORS ---
 COLORS = {

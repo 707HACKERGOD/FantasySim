@@ -43,8 +43,41 @@ class UIManager:
         for i, line in enumerate(reversed(game_world.interaction_log[-3:])):
             surface.blit(FONTS["default"].render(line, True, COLORS["text"]), (30, self.screen_h - 35 - i * 25))
 
-        # Top Info
-        info = f"Day {game_world.day} | Time {int(game_world.time_of_day)} | Speed x{game_state.speed} | Zoom {game_state.zoom:.1f}x"
+        # --- NEW DATE/TIME LOGIC ---
+        # 1. Calculate Time (0-1200 scale -> 24h clock)
+        total_minutes = int((game_world.time_of_day / 1200) * 1440)
+        hour_24 = total_minutes // 60
+        minute = total_minutes % 60
+        period = "am" if hour_24 < 12 else "pm"
+        hour_12 = 12 if hour_24 == 0 or hour_24 == 12 else hour_24 % 12
+        time_str = f"{hour_12}:{minute:02d}{period}"
+
+        # 2. Calculate Date (Day 1 -> Jan 1 Year 1)
+        months = [
+            ("January", 31), ("February", 28), ("March", 31), ("April", 30),
+            ("May", 31), ("June", 30), ("July", 31), ("August", 31),
+            ("September", 30), ("October", 31), ("November", 30), ("December", 31)
+        ]
+        
+        days_total = game_world.day - 1
+        year = 1 + (days_total // 365)
+        day_of_year = days_total % 365
+        
+        month_name = ""
+        day_num = 0
+        for m_name, m_days in months:
+            if day_of_year < m_days:
+                month_name = m_name
+                day_num = day_of_year + 1
+                break
+            day_of_year -= m_days
+            
+        date_str = f"{month_name} {day_num} Year {year}"
+        
+        # 3. Compile Info String
+        info = f"{time_str} {date_str} | Speed x{game_state.speed} | Zoom {game_state.zoom:.1f}x"
+        # ---------------------------
+
         surface.blit(FONTS["header"].render(info, True, COLORS["white"]), (20, 20))
 
         if selected_char:
@@ -59,6 +92,7 @@ class UIManager:
             surface.blit(overlay, (0, 0))
             t = FONTS["header"].render("PAUSED", True, COLORS["white"])
             surface.blit(t, (self.screen_w // 2 - t.get_width() // 2, self.screen_h // 2))
+
 
     def _draw_char_panel(self, surface, char, game_mode, player_char):
         panel = pygame.Rect(self.screen_w - 300, 60, 280, 300)

@@ -3,7 +3,7 @@ import math
 import pickle
 import os
 from character import Character, RACES, MBTI_TYPES
-from config import MAP_W, MAP_H, LOCATIONS, BEDS, HOUSES, JOBS_LIST, PATROL_POINTS, INN_BAR_AREA, RANCH, FIELDS
+from config import MAP_W, MAP_H, LOCATIONS, BEDS, HOUSES, JOBS_LIST, PATROL_POINTS, INN_BAR_AREA, RANCH, FIELDS, TIME_SPEED
 
 class Environment:
     def __init__(self):
@@ -39,7 +39,28 @@ class World:
 
     def update(self, game_speed, game_mode):
         from social import process_interaction
-        self.time_of_day += 0.2 * game_speed
+        
+        # --- TIME UPDATE LOGIC CHANGED HERE ---
+        # 1. Check for sleeping (Player near bed)
+        is_sleeping = False
+        if self.player_char:
+            px, py = self.player_char.x, self.player_char.y
+            for bx, by in BEDS:
+                # Check if player is within 40 pixels of a bed
+                if ((px - bx)**2 + (py - by)**2)**0.5 < 40:
+                    is_sleeping = True
+                    break
+        
+        # 2. Calculate time increment
+        # Use TIME_SPEED from config (0.017)
+        increment = TIME_SPEED * game_speed
+        
+        if is_sleeping:
+            increment *= 100  # Speed up time by 100x if sleeping
+        
+        self.time_of_day += increment
+        # -------------------------------------
+
         if self.time_of_day >= 1200:
             self.time_of_day = 0
             self.day += 1

@@ -34,8 +34,10 @@ def draw_viewport(surface, game_world, assets, camera, frame_count, selected_cha
     sea_frames = assets.sprites["water_sea"]
     fresh_frames = assets.sprites["water_fresh"]
     grass_frames = assets.sprites["grass"]
-    sea_idx = (frame_count // 20) % len(sea_frames)
-    fresh_idx = (frame_count // 20) % len(fresh_frames)
+    
+    # CHANGED: Speed up animations (lower divisor = faster)
+    sea_idx = (frame_count // 5) % len(sea_frames)
+    fresh_idx = (frame_count // 5) % len(fresh_frames)
 
     for row in range(start_row, end_row):
         for col in range(start_col, end_col):
@@ -49,7 +51,8 @@ def draw_viewport(surface, game_world, assets, camera, frame_count, selected_cha
             elif "FARM" in LOCATIONS and LOCATIONS["FARM"].collidepoint(tile_x, tile_y):
                 surface.blit(assets.sprites["dirt"], (x, y))
             else:
-                grass_idx = (col + row + (frame_count // 30)) % len(grass_frames)
+                # CHANGED: Speed up grass animation slightly
+                grass_idx = (col + row + (frame_count // 8)) % len(grass_frames)
                 surface.blit(grass_frames[grass_idx], (x, y))
 
     # --- Draw Structures ---
