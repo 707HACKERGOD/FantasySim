@@ -1,11 +1,11 @@
-FantasySim (wip title) is a Python 2d cozy social sim I vibe-code in gemini for fun when bored.
+FantasySim is a Python 2d town sim to test the hangout system for project Checkered
 
-You can observe a small virtual town of 16 characters, customize them and play as any of them.
+You can observe a small virtual town of 16 characters. They use a dual trails system for navigation: navmesh + paths/curves
 
 Roadmap:
 
-- ✅ Day/Night cycle
-- 🚧 Professions with unique varying schedules, hiring logic
+- Day/Night cycle
+- Professions with unique varying schedules, hiring logic
 - Conversations system for 2+ participants with a texting-app-like UI and focus on "reply" mechanic where different personalities get different options for which messages they can reply to
 - Activities system for 2+ participants: walks, beach volleyball, dates
 - Randomized personalities (MBTI, astrology, backstories) that define schedules and interactions
